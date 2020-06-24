@@ -7,10 +7,8 @@ export class TemplateEntity extends Document {
   templateCode: string;
 
   @Prop()
-  templateString: string;
+  templateBody: string;
 
-  @Prop()
-  params: string[];
 }
 
 export const TemplateSchema = SchemaFactory.createForClass(TemplateEntity);

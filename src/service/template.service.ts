@@ -1,23 +1,36 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { TemplateRepository } from '../repository/template.repository'
 import { TemplateDto } from 'src/core/dto/template.dto';
-import { TemplateEntity } from 'src/core/entity/TemplateEntity';
 
 @Injectable()
 export class TemplateService {
 
-    constructor(@Inject() private templateRepository: TemplateRepository) { }
+    constructor(private templateRepository: TemplateRepository) { }
 
-    async create(createTemplateDTO: TemplateDto): Promise<TemplateEntity> {
-        return this.templateRepository.create(createTemplateDTO);
+    async create(createTemplateDTO: TemplateDto): Promise<TemplateDto> {
+        const templateEntity = await this.templateRepository.create(createTemplateDTO);
+        return new TemplateDto(templateEntity.templateCode, templateEntity.templateBody);
     }
 
-    async findAll(): Promise<TemplateEntity[]> {
-        return this.templateRepository.findAll();
+    async findAll(): Promise<TemplateDto[]> {
+        const templateEntities = await this.templateRepository.findAll();
+        return templateEntities.map(templateEntity => {
+            return new TemplateDto(templateEntity.templateCode, templateEntity.templateBody,);
+        })
     }
 
-    async findOneByCode(templateCode: string): Promise<TemplateEntity[]> {
-        return this.templateRepository.findOneByCode(templateCode);
+    async findOneByCode(templateCode: string): Promise<TemplateDto> {
+        const templateEntity = await this.templateRepository.findOneByCode(templateCode);
+        return new TemplateDto(templateEntity.templateCode, templateEntity.templateBody);
+    }
+
+    async deleteByCode(templateCode: string) {
+        this.templateRepository.deleteByCode(templateCode);
+    }
+
+    async update(updateTemplateDto: TemplateDto): Promise<TemplateDto> {
+        const templateEntity = await this.templateRepository.update(updateTemplateDto);
+        return new TemplateDto(templateEntity.templateCode, templateEntity.templateBody);
     }
 
 }

@@ -7,12 +7,11 @@ import { TemplateDto } from 'src/core/dto/template.dto';
 
 @Injectable()
 export class TemplateRepository {
-  // @InjectModel(TemplateEntity.name)
-  private templateModel: Model<TemplateEntity>
-  constructor( ) {}
+  constructor(@InjectModel(TemplateEntity.name) private templateModel: Model<TemplateEntity>) {}
 
-  async create(createCatDto: TemplateDto): Promise<TemplateEntity> {
-    const createdTemplate = new this.templateModel(createCatDto);
+  async create(createTemplateDto: TemplateDto): Promise<TemplateEntity> {
+    const createdTemplate = new this.templateModel(createTemplateDto);
+    
     return createdTemplate.save();
   }
 
@@ -20,9 +19,16 @@ export class TemplateRepository {
     return this.templateModel.find().exec();
   }
   
-  async findOneByCode(templateCode: string): Promise<TemplateEntity[]> {
-    return this.templateModel.find().where('templateCode').equals(templateCode).exec();
+  async findOneByCode(templateCode: string): Promise<TemplateEntity> {
+    return this.templateModel.findOne({'templateCode': templateCode});
+  }
+  
+  async deleteByCode(templateCode: string) {
+    return this.templateModel.deleteOne({'templateCode': templateCode});
   }
 
+  async update(updateTemplateDto: TemplateDto): Promise<TemplateEntity> {
+    return this.templateModel.updateOne({'templateCode': updateTemplateDto.templateCode}, updateTemplateDto);
+  }
 
 }

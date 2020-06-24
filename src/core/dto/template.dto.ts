@@ -1,5 +1,9 @@
 export class TemplateDto {
-    templateCode: string;
-    templateString: string;
-    params: string[];
+
+
+    constructor(public templateCode: string, public templateBody: string){
+
+    }
+
+
 }
