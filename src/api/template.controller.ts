@@ -1,12 +1,11 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, Inject } from '@nestjs/common';
 import { TemplateDto } from 'src/core/dto/template.dto';
-
-import { TemplateService } from 'src/service/template.service';
+import { ITemplateService } from 'src/service/itemplate.service';
 
 @Controller('template')
 export class TemplateController {
 
-    constructor(private templateService: TemplateService){
+    constructor(@Inject('ITemplateService') private templateService: ITemplateService){
         
     }
 

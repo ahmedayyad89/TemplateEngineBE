@@ -1,11 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Inject } from '@nestjs/common';
 import { ParseDto } from 'src/core/dto/parse.dto';
-import { ParserService } from 'src/service/parser.service';
+import { IParserService } from 'src/service/iparser.service';
 
 @Controller('parser')
 export class ParserController {
 
-    constructor(private parseService: ParserService){
+    constructor(@Inject('IParserService') private parseService: IParserService){
         
     }
 

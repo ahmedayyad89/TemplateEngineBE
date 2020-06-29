@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { TemplateRepository } from '../repository/template.repository'
+import { Injectable, Inject } from '@nestjs/common';
 import { TemplateDto } from 'src/core/dto/template.dto';
+import { ITemplateRepository } from 'src/repository/itemplate.repository';
+import { ITemplateService } from './itemplate.service';
 
 @Injectable()
-export class TemplateService {
+export class TemplateService implements ITemplateService {
 
-    constructor(private templateRepository: TemplateRepository) { }
+    constructor(@Inject('ITemplateRepository') private templateRepository: ITemplateRepository) { }
 
     async create(createTemplateDTO: TemplateDto): Promise<TemplateDto> {
         const templateEntity = await this.templateRepository.create(createTemplateDTO);

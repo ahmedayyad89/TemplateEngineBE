@@ -3,10 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { TemplateEntity } from 'src/core/entity/TemplateEntity';
 import { TemplateDto } from 'src/core/dto/template.dto';
+import { ITemplateRepository } from './itemplate.repository';
 
 
 @Injectable()
-export class TemplateRepository {
+export class TemplateRepository implements ITemplateRepository {
   constructor(@InjectModel(TemplateEntity.name) private templateModel: Model<TemplateEntity>) {}
 
   async create(createTemplateDto: TemplateDto): Promise<TemplateEntity> {

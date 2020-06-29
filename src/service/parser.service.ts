@@ -1,10 +1,11 @@
-import { Injectable, HttpException } from '@nestjs/common';
-import { TemplateRepository } from 'src/repository/template.repository';
+import { Injectable, HttpException, Inject } from '@nestjs/common';
+import { ITemplateRepository } from 'src/repository/itemplate.repository';
 import { ParseDto, ResultDto } from 'src/core/dto/parse.dto';
+import { IParserService } from './iparser.service';
 @Injectable()
-export class ParserService {
+export class ParserService implements IParserService {
 
-    constructor(private templateRepository: TemplateRepository) { }
+    constructor(@Inject('ITemplateRepository')  private templateRepository: ITemplateRepository) { }
 
     async parse(parseDto: ParseDto): Promise<ResultDto> {
         const templateEntity = await this.templateRepository.findOneByCode(parseDto.templateCode);
@@ -18,18 +19,25 @@ export class ParserService {
     private parseString(templateBody: string, data: any): ResultDto {
         const errors = new Set<string>();
         const regex = /\#\:[ ]*[a-zA-z]+[ ]*\#/gm;
-        const found = templateBody.match(regex);
-        found.map(hashedKey => {
-            const key = hashedKey.substring(2, hashedKey.length - 1)
-            console.log(key)
-            const value = data[key.trim().toLowerCase()];
+        const hashedKeys = templateBody.match(regex);
+
+        const keys = hashedKeys.map(hashedKey => {
+            return hashedKey.substring(2, hashedKey.length - 1).trim().toLowerCase();
+        });
+        keys.forEach((key, i) => {
+            const value = data[key];
             if (value == null) {
                 errors.add(`You have to add this paramter in the data set: ${key}`);
             } else {
-                templateBody = templateBody.replace(hashedKey, value)
+                templateBody = templateBody.replace(hashedKeys[i], value)
             }
-
         });
+
+        Object.keys(data).forEach(key => {
+            if(!keys.includes(key.trim().toLowerCase())){
+                errors.add(`You have added a parameter: ${key} that not included in the template`);
+            }
+        })
 
         return new ResultDto(templateBody, Array.from(errors));;
     }
@@ -38,7 +46,7 @@ export class ParserService {
     private makeKeysLowerCased(obj: any): any {
         
         return Object.keys(obj).reduce(function(accum, key) {
-            accum[key.toLowerCase()] = obj[key];
+            accum[key.trim().toLowerCase()] = obj[key];
             return accum;
           }, {});
     }
